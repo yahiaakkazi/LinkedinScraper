@@ -1,4 +1,5 @@
 from tqdm import tqdm
+import time
 
 def get_search_results(api=None,keywords = "rh",current_company = None):
     search_results = api.search_people(keywords=keywords, connection_of=None, network_depths=None, current_company=current_company, past_companies=None,
@@ -11,12 +12,15 @@ def get_search_results(api=None,keywords = "rh",current_company = None):
 def get_data(api= None,processed=None):
     data = []
     for i in tqdm(processed):
-        d = {}
-        l = api.get_profile(public_id=i[1], urn_id=i[0])
-        d["fname"]=l.get("firstName","").lower()
-        d["lname"]=l.get("lastName","").lower()
-        d["company"]= l.get("experience","")[0].get("companyName","").lower()
-        data.append(d)
+        try:
+            d = {}
+            l = api.get_profile(public_id=i[1], urn_id=i[0])
+            d["fname"]=l.get("firstName","").lower()
+            d["lname"]=l.get("lastName","").lower()
+            d["company"]= l.get("experience","")[0].get("companyName","").lower()
+            data.append(d)
+        except:
+            continue
     return data
 
 def write_data_file(data):
